@@ -28,4 +28,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public
-          pubilsh_branch: master
+          pubilsh_branch: gh-pages
+          cname: dmitriyvovk.com
