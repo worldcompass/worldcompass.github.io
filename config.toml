@@ -53,7 +53,7 @@ weight = 5
   showAllPostsArchive = false # default
 
   # Home page settings
-  description = "The aim of this blog is to use Fainman technique for learning something and cover my own gaps by expalining things to the public. As the benefit, the blog could leed to interesting conversations and new discoveries. Thank you for reading it!"
+  description = "The aim of this blog is to use Feynman technique for learning something and cover my own gaps by expalining things to the public. As the benefit, the blog could leed to interesting conversations and new discoveries. Thank you for reading it!"
   mainSection = "posts" # your main section
   showAllPostsOnHomePage = false # default
   postsOnHomePage = 1 # this option will be ignored if showAllPostsOnHomePage is set to true
