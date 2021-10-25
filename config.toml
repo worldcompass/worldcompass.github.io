@@ -53,7 +53,7 @@ weight = 5
   showAllPostsArchive = false # default
 
   # Home page settings
-  description = "The aim of this blog is to use Feynman technique for learning something and cover my own gaps by expalining things to the public. As the benefit, the blog could leed to interesting conversations and new discoveries. Thank you for reading it!"
+  description = "The aim of this blog is to use Feynman technique for learning something and cover my own gaps by expalining things to the public. As the benefit, the blog could leed to interesting conversations and new discoveries with people all around the world. Thank you for reading it!"
   mainSection = "posts" # your main section
   showAllPostsOnHomePage = false # default
   postsOnHomePage = 1 # this option will be ignored if showAllPostsOnHomePage is set to true
@@ -66,17 +66,11 @@ weight = 5
   show_updated = true # default
   showReadTime = true # default
 
+  disqusShortname = "dima_vovk"
+  
   [params.comments]
     enabled = true # default
-    engine = "cactus_comments" # only disqus, utterances, and cactus_comments is supported
-    [params.comments.utterances]
-      repo = "<github_username>/<github_reponame>"
-      label = "hugo-site-name" # you can use however you want to label your name in your repo's issues
-      theme = "github-light"
-    [params.comments.cactuscomments]
-      siteName = "your_cactus_comments_sitename" # see https://cactus.chat/ on how to register your site name
-      #serverUrl = "" # Defaults to https://matrix.cactus.chat:8448 (Cactus Chat public server)
-      #serverName = "" # Defaults to cactus.chat
+    engine = "disqus" # only disqus, utterances, and cactus_comments is supported
 
   # the value of name should be an valid font awesome icon name (brands type)
   # https://fontawesome.com/icons?d=gallery&s=brands
