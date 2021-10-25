@@ -3,6 +3,7 @@ languageCode = "en-us"
 title = "Dmitriy Vovk personal blog"
 theme = "cactus"
 disqusShortname = "dmitriyvovk"
+googleAnalytics = "G-ZTJ277R2VL"
 
 
 # Main menu which appears below site header.
