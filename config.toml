@@ -2,7 +2,7 @@ baseURL = "https://dmitriyvovk.com"
 languageCode = "en-us"
 title = "Dmitriy Vovk personal blog"
 theme = "cactus"
-disqusShortname = "dima_vovk"
+disqusShortname = "dmitriyvovk"
 
 
 # Main menu which appears below site header.
