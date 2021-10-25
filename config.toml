@@ -2,6 +2,8 @@ baseURL = "https://dmitriyvovk.com"
 languageCode = "en-us"
 title = "Dmitriy Vovk personal blog"
 theme = "cactus"
+disqusShortname = "dima_vovk"
+
 
 # Main menu which appears below site header.
 [[menu.main]]
@@ -66,7 +68,6 @@ weight = 5
   show_updated = true # default
   showReadTime = true # default
 
-  disqusShortname = "dima_vovk"
   
   [params.comments]
     enabled = true # default
