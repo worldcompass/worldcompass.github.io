@@ -69,7 +69,6 @@ weight = 5
   show_updated = true # default
   showReadTime = true # default
 
-  
   [params.comments]
     enabled = true # default
     engine = "disqus" # only disqus, utterances, and cactus_comments is supported
