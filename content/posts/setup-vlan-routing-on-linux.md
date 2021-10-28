@@ -1,9 +1,10 @@
 ---
 title: 'Setup VLAN routing on Linux'
 date: 2021-10-26T15:30:38+03:00
+draft: false
 ---
 
-## What is the purpose of this writings?
+# What is the purpose of this writings?
 As for the 25 April 2021, I was in the process of learning networking for the DevOps position in my current company at Namecheap and I've received the task to understand networking.
 
 The task was about creating network configuration where one linux machine is acting like a router and a few others are like clients that can communicate with each other(depends of the topology) or go to the Internet. I just want to answer the questions that rised during development and understand the topic even more deeply.
