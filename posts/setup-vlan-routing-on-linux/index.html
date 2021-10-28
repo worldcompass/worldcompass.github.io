@@ -135,11 +135,13 @@ The task was about creating network configuration where one linux machine is act
 <li><a href=#make-the-configuration-persestent>Make the configuration persestent</a></li>
 </ul>
 </li>
-<li><a href=#firewalling>Firewalling</a>
+<li><a href=#firewalling>Firewalling</a></li>
+<li><a href=#how-does-iptables-work>How does iptables work?</a>
 <ul>
 <li><a href=#nat>NAT</a></li>
 </ul>
 </li>
+<li><a href=#conslusion>Conslusion</a></li>
 <li><a href=#summary>Summary</a></li>
 </ul>
 </nav>
@@ -177,8 +179,7 @@ Setup VLAN routing on Linux
 <li>network interface</li>
 </ul>
 <h2 id=actual-task>Actual task</h2>
-<p>What I&rsquo;ve received?
-![[Networking practice - Frame 1.jpg]]</p>
+<p>What I&rsquo;ve received?</p>
 <p>And then I started digging into the topic.
 Questions?</p>
 <ol>
@@ -197,11 +198,10 @@ Questions?</p>
 Also, there could be different types of them.</p>
 </blockquote>
 <p>So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the vms.</p>
-<hr>
 <h3 id=choosing-network-interfaces>Choosing network interfaces</h3>
 <p>In order to accomplish this task, I need to set up 5 [[virtual machine]] in the virtualized environment and I choose the [[Virtual Box]].</p>
 <p>image with box goes here.</p>
-<p>Virtual box and [[Virtualization]] technologies provides hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working on the real environment without virtualization layer.</p>
+<p>Virtual box and Virtualization technologies provides hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working on the real environment without virtualization layer.</p>
 <p>So, this BOX is taking care of some basic things needed for the operation system inside this box to work. It creates virtual hard drive, sets up network interfaces, allows you to boot CD into the virtual CD-ROM.</p>
 <p>Knowing that, I assume that router should have two virtual network interfaces and other machines should have only one. Now it is time to decide what Virtual box provides us and what suites to our purpose.
 Long story is placed <a href=https://www.virtualbox.org/manual/ch06.html>here</a>. Long story short: I needed host-only networking to create a network of virtual servers hidden behind this box.
@@ -219,7 +219,6 @@ Very detailed explanation <a href=https://www.nakivo.com/blog/virtualbox-network
 <li>Why virtualizaiton soft emulate hardware in software?</li>
 <li>Why there are different network interface modes in virtual box?</li>
 </ul>
-<hr>
 <h2 id=vlans>Vlans</h2>
 <p>Once we set up our virtual machines, we can move further with all routing and vlans.</p>
 <p>We need to understand what is VLAN.</p>
@@ -255,12 +254,12 @@ Centos network interface configurations.</p>
 <p>You can use the virtualization option to save the machine state if you are not sure. Also, you should know about snapshots. You can make as per any change in the configuration. Sort of git commit, creating a point to get back to the working state.</p>
 <p>Maybe to write commands for each vm?</p>
 <p>image of final configuration.</p>
-<hr>
 <h2 id=firewalling>Firewalling</h2>
 <p>Next part is about network firewall and some restrictions.</p>
 <p>Best tool to configure firewall rules is <code>iptables</code>. New tools like <code>ufw</code> for ubuntu or <code>firewall-cmd</code> on Centos are some kind of simplification of the iptables. They are working above this program, but with the simplification goes the limitations of covered variety of cases. They are fine for something usual, but require same iptables rules to be written in firewall-cmd direct rule(which didn&rsquo;t work at all) or writing config files for ufw with the same iptables rules as you were writing directly.</p>
 <p>In general, these new tools are great and easy to use but only for a &ldquo;usual&rdquo; tasks and not for something complicated.</p>
-<p>How does [[iptables]] work? Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
+<h2 id=how-does-iptables-work>How does iptables work?</h2>
+<p>Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
 There are 5 of chains speaking in terms of iptables: forward, input, output, prerouting, postrouting. But, you can ommit that pre/post things, because at these steps inital packages are modified, that is not very often made. You can read more about them on any other resources. I would recommend</p>
 <ul>
 <li><input disabled type=checkbox> place link here</li>
@@ -283,7 +282,7 @@ There are 5 of chains speaking in terms of iptables: forward, input, output, pre
 <li><input disabled type=checkbox> nat rules go here</li>
 </ul>
 <p>Saving configuration to persistent and we are done.</p>
-<hr>
+<h2 id=conslusion>Conslusion</h2>
 <p>These article is the process of my digging for about a month in network configuration and I can made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.
 If this article saved your some time, you can (link to buy me a coffee).</p>
 <p>I&rsquo;ve tried to explain all the stuff in the analogues manner because I think they stick to your mind and you can reuse them in the future, or these images can evolve in your own pictures.
@@ -329,11 +328,13 @@ If you, as I ended up, opened about 15 tabs with different explanations of termi
 <li><a href=#make-the-configuration-persestent>Make the configuration persestent</a></li>
 </ul>
 </li>
-<li><a href=#firewalling>Firewalling</a>
+<li><a href=#firewalling>Firewalling</a></li>
+<li><a href=#how-does-iptables-work>How does iptables work?</a>
 <ul>
 <li><a href=#nat>NAT</a></li>
 </ul>
 </li>
+<li><a href=#conslusion>Conslusion</a></li>
 <li><a href=#summary>Summary</a></li>
 </ul>
 </nav>
