@@ -2,6 +2,7 @@
 title: 'Setup VLAN routing on Linux'
 date: 2021-10-26T15:30:38+03:00
 draft: false
+tags: networking, Linux, iptables,
 ---
 
 # What is the purpose of this writings?
@@ -10,6 +11,7 @@ As for the 25 April 2021, I was in the process of learning networking for the De
 The task was about creating network configuration where one linux machine is acting like a router and a few others are like clients that can communicate with each other(depends of the topology) or go to the Internet. I just want to answer the questions that rised during development and understand the topic even more deeply.
 
 You may have heard about Feynman technique of teaching where you are trying to explain the topic as simply as possible. So, in general, there topics are the attempt for learning in a different way. Also, a great way of memorization because I can get back to this article at any time.
+
 
 Covered topics
 - virtualization
@@ -22,7 +24,6 @@ Covered topics
 
 ## Actual task
 What I've received?
-![[Networking practice - Frame 1.jpg]]
 
 And then I started digging into the topic.
 Questions?
@@ -44,13 +45,12 @@ This network card could be emulated by the virtualization technologies and on on
 
 So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the vms.
 
----
 ### Choosing network interfaces
 In order to accomplish this task, I need to set up 5 [[virtual machine]] in the virtualized environment and I choose the [[Virtual Box]]. 
 
 image with box goes here.
 
-Virtual box and [[Virtualization]] technologies provides hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working on the real environment without virtualization layer.
+Virtual box and Virtualization technologies provides hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working on the real environment without virtualization layer.
 
 So, this BOX is taking care of some basic things needed for the operation system inside this box to work. It creates virtual hard drive, sets up network interfaces, allows you to boot CD into the virtual CD-ROM.
 
@@ -59,10 +59,13 @@ Long story is placed [here](https://www.virtualbox.org/manual/ch06.html). Long s
 Using that Box analogy, let VMs to play inside without any connections to the outside world. You will need to create a network in the Virtual box settings and attach interfaces of your machines to it.
 Very detailed explanation [here](https://www.nakivo.com/blog/virtualbox-network-setting-guide/)
 
+
 Then goes the next step of choosing the second interface to the router. I understood from the task that I need something with [[NAT]] but NAT network or just NAT? Carefully look at the documentation. After a few minutes of staring, I saw that just NAT does not allow vm-to-vm communication.
+
 
 Now we are finished with network interfaces.
 - [ ] can I change network interface settings inside virtual box? Because I don't understand how it is made.
+
 
 You can combine properties of two net interfaces on one machine to get value from both. But combination always increases complexity. Make sure that you deeply understand the building blocks. They will come handy in different situations like working in the Cloud, creating your own network at work or at home.
 
@@ -71,7 +74,7 @@ You can combine properties of two net interfaces on one machine to get value fro
 - Why virtualizaiton soft emulate hardware in software?
 - Why there are different network interface modes in virtual box?
 
----
+
 ## Vlans
 Once we set up our virtual machines, we can move further with all routing and vlans.
 
@@ -121,7 +124,6 @@ Maybe to write commands for each vm?
 
 image of final configuration.
 
----
 ## Firewalling
 Next part is about network firewall and some restrictions.
 
@@ -129,7 +131,8 @@ Best tool to configure firewall rules is `iptables`. New tools like `ufw` for ub
 
 In general, these new tools are great and easy to use but only for a "usual" tasks and not for something complicated.
 
-How does [[iptables]] work? Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
+## How does iptables work? 
+Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
 There are 5 of chains speaking in terms of iptables: forward, input, output, prerouting, postrouting. But, you can ommit that pre/post things, because at these steps inital packages are modified, that is not very often made. You can read more about them on any other resources. I would recommend
 - [ ] place link here
 - [ ] draw an image of it
@@ -160,8 +163,7 @@ Please notice that packets go in both direction. Only one allow rule for outcomm
 Saving configuration to persistent and we are done.
 
 
----
-
+## Conslusion
 These article is the process of my digging for about a month in network configuration and I can made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.
 If this article saved your some time, you can (link to buy me a coffee).
 
