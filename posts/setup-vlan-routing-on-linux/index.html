@@ -1,0 +1,423 @@
+<!doctype html><html lang=en-us>
+<head>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-brands-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-regular-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-solid-900.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<script type=text/javascript src=https://latest.cactus.chat/cactus.js></script>
+<link rel=stylesheet href=https://latest.cactus.chat/style.css type=text/css>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<title> Setup VLAN routing on Linux | Dmitriy Vovk personal blog</title>
+<link rel=canonical href=https://dmitriyvovk.com/posts/setup-vlan-routing-on-linux/>
+<meta name=description content="The aim of this blog is to use Feynman technique for learning something and cover my own gaps by expalining things to the public. As the benefit, the blog could leed to interesting conversations and new discoveries with people all around the world. Thank you for reading it!">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="all,follow">
+<meta name=googlebot content="index,follow,snippet,archive">
+<meta property="og:title" content="Setup VLAN routing on Linux">
+<meta property="og:description" content="What is the purpose of this writings? As for the 25 April 2021, I was in the process of learning networking for the DevOps position in my current company at Namecheap and I&rsquo;ve received the task to understand networking.
+The task was about creating network configuration where one linux machine is acting like a router and a few others are like clients that can communicate with each other(depends of the topology) or go to the Internet.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dmitriyvovk.com/posts/setup-vlan-routing-on-linux/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-26T15:30:38+03:00">
+<meta property="article:modified_time" content="2021-10-26T15:30:38+03:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Setup VLAN routing on Linux">
+<meta name=twitter:description content="What is the purpose of this writings? As for the 25 April 2021, I was in the process of learning networking for the DevOps position in my current company at Namecheap and I&rsquo;ve received the task to understand networking.
+The task was about creating network configuration where one linux machine is acting like a router and a few others are like clients that can communicate with each other(depends of the topology) or go to the Internet.">
+<link rel=stylesheet href=https://dmitriyvovk.com/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="><!--[if lt IE 9]><script src=https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script>
+<script src=https://oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
+<link rel=icon type=image/png href=https://dmitriyvovk.com/images/favicon.ico>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-ZTJ277R2VL','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+</head>
+<body class="max-width mx-auto px3 ltr">
+<div class="content index py4">
+<div id=header-post>
+<a id=menu-icon href=#><i class="fas fa-bars fa-lg"></i></a>
+<a id=menu-icon-tablet href=#><i class="fas fa-bars fa-lg"></i></a>
+<a id=top-icon-tablet href=# onclick="$('html, body').animate({scrollTop:0},'fast')" style=display:none aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+<span id=menu>
+<span id=nav>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>Blog posts</a></li>
+<li><a href=/tags>Tags</a></li>
+<li><a href=/about>About</a></li>
+</ul>
+</span>
+<br>
+<span id=actions>
+<ul>
+<li>
+<a class=icon href=https://dmitriyvovk.com/posts/new-article/ aria-label=Previous>
+<i class="fas fa-chevron-left" aria-hidden=true onmouseover="$('#i-prev').toggle()" onmouseout="$('#i-prev').toggle()"></i>
+</a>
+</li>
+<li>
+<a class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page">
+<i class="fas fa-chevron-up" aria-hidden=true onmouseover="$('#i-top').toggle()" onmouseout="$('#i-top').toggle()"></i>
+</a>
+</li>
+<li>
+<a class=icon href=# aria-label=Share>
+<i class="fas fa-share-alt" aria-hidden=true onmouseover="$('#i-share').toggle()" onmouseout="$('#i-share').toggle()" onclick="return $('#share').toggle(),!1"></i>
+</a>
+</li>
+</ul>
+<span id=i-prev class=info style=display:none>Previous post</span>
+<span id=i-next class=info style=display:none>Next post</span>
+<span id=i-top class=info style=display:none>Back to top</span>
+<span id=i-share class=info style=display:none>Share post</span>
+</span>
+<br>
+<div id=share style=display:none>
+<ul>
+<li>
+<a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f" aria-label=Facebook>
+<i class="fab fa-facebook" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://twitter.com/share?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&text=Setup%20VLAN%20routing%20on%20Linux" aria-label=Twitter>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=Linkedin>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&is_video=false&description=Setup%20VLAN%20routing%20on%20Linux" aria-label=Pinterest>
+<i class="fab fa-pinterest" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="mailto:?subject=Setup%20VLAN%20routing%20on%20Linux&body=Check out this article: https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f" aria-label=Email>
+<i class="fas fa-envelope" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://getpocket.com/save?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=Pocket>
+<i class="fab fa-get-pocket" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://reddit.com/submit?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=reddit>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&name=Setup%20VLAN%20routing%20on%20Linux&description=What%20is%20the%20purpose%20of%20this%20writings%3f%20As%20for%20the%2025%20April%202021%2c%20I%20was%20in%20the%20process%20of%20learning%20networking%20for%20the%20DevOps%20position%20in%20my%20current%20company%20at%20Namecheap%20and%20I%26rsquo%3bve%20received%20the%20task%20to%20understand%20networking.%0aThe%20task%20was%20about%20creating%20network%20configuration%20where%20one%20linux%20machine%20is%20acting%20like%20a%20router%20and%20a%20few%20others%20are%20like%20clients%20that%20can%20communicate%20with%20each%20other%28depends%20of%20the%20topology%29%20or%20go%20to%20the%20Internet." aria-label=Tumblr>
+<i class="fab fa-tumblr" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&t=Setup%20VLAN%20routing%20on%20Linux" aria-label="Hacker News">
+<i class="fab fa-hacker-news" aria-hidden=true></i>
+</a>
+</li>
+</ul>
+</div>
+<div id=toc>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#actual-task>Actual task</a></li>
+<li><a href=#what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</a>
+<ul>
+<li><a href=#choosing-network-interfaces>Choosing network interfaces</a></li>
+<li><a href=#questions>Questions?</a></li>
+</ul>
+</li>
+<li><a href=#vlans>Vlans</a>
+<ul>
+<li><a href=#make-the-configuration-persestent>Make the configuration persestent</a></li>
+</ul>
+</li>
+<li><a href=#firewalling>Firewalling</a>
+<ul>
+<li><a href=#nat>NAT</a></li>
+</ul>
+</li>
+<li><a href=#summary>Summary</a></li>
+</ul>
+</nav>
+</div>
+</span>
+</div>
+<article class=post itemscope itemtype=http://schema.org/BlogPosting>
+<header>
+<h1 class=posttitle itemprop="name headline">
+Setup VLAN routing on Linux
+</h1>
+<div class=meta>
+<div class=postdate>
+<time datetime="2021-10-26 15:30:38 +0300 +0300" itemprop=datePublished>2021-10-26</time>
+</div>
+<div class=article-read-time>
+<i class="far fa-clock"></i>
+9 minute read
+</div>
+</div>
+</header>
+<div class=content itemprop=articleBody>
+<h1 id=what-is-the-purpose-of-this-writings>What is the purpose of this writings?</h1>
+<p>As for the 25 April 2021, I was in the process of learning networking for the DevOps position in my current company at Namecheap and I&rsquo;ve received the task to understand networking.</p>
+<p>The task was about creating network configuration where one linux machine is acting like a router and a few others are like clients that can communicate with each other(depends of the topology) or go to the Internet. I just want to answer the questions that rised during development and understand the topic even more deeply.</p>
+<p>You may have heard about Feynman technique of teaching where you are trying to explain the topic as simply as possible. So, in general, there topics are the attempt for learning in a different way. Also, a great way of memorization because I can get back to this article at any time.</p>
+<p>Covered topics</p>
+<ul>
+<li>virtualization</li>
+<li>iptables and firewalls</li>
+<li>virtual box</li>
+<li>virtual machine</li>
+<li>NAT</li>
+<li>OSI layers</li>
+<li>network interface</li>
+</ul>
+<h2 id=actual-task>Actual task</h2>
+<p>What I&rsquo;ve received?
+![[Networking practice - Frame 1.jpg]]</p>
+<p>And then I started digging into the topic.
+Questions?</p>
+<ol>
+<li>What is VLAN?</li>
+<li>How to make the connectivity?</li>
+<li>How can VLANs communicate?</li>
+<li>How to set everything up in the tools like Virtual Box?</li>
+<li>and tons of others.</li>
+</ol>
+<p>Let&rsquo;s start with configuring network interfaces on the router.</p>
+<h2 id=what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</h2>
+<p>So, what is [[network interface]]? Network interface is a place where you plug ethernet cable into computer(similar for WiFi).</p>
+<p>This network card could be emulated by the virtualization technologies and on one real network interface, you can create different virtual network interfaces.</p>
+<blockquote>
+<p>Virtualization technologies could give different capabilities for network interfaces inside their virtualmachineland.
+Also, there could be different types of them.</p>
+</blockquote>
+<p>So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the vms.</p>
+<hr>
+<h3 id=choosing-network-interfaces>Choosing network interfaces</h3>
+<p>In order to accomplish this task, I need to set up 5 [[virtual machine]] in the virtualized environment and I choose the [[Virtual Box]].</p>
+<p>image with box goes here.</p>
+<p>Virtual box and [[Virtualization]] technologies provides hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working on the real environment without virtualization layer.</p>
+<p>So, this BOX is taking care of some basic things needed for the operation system inside this box to work. It creates virtual hard drive, sets up network interfaces, allows you to boot CD into the virtual CD-ROM.</p>
+<p>Knowing that, I assume that router should have two virtual network interfaces and other machines should have only one. Now it is time to decide what Virtual box provides us and what suites to our purpose.
+Long story is placed <a href=https://www.virtualbox.org/manual/ch06.html>here</a>. Long story short: I needed host-only networking to create a network of virtual servers hidden behind this box.
+Using that Box analogy, let VMs to play inside without any connections to the outside world. You will need to create a network in the Virtual box settings and attach interfaces of your machines to it.
+Very detailed explanation <a href=https://www.nakivo.com/blog/virtualbox-network-setting-guide/>here</a></p>
+<p>Then goes the next step of choosing the second interface to the router. I understood from the task that I need something with [[NAT]] but NAT network or just NAT? Carefully look at the documentation. After a few minutes of staring, I saw that just NAT does not allow vm-to-vm communication.</p>
+<p>Now we are finished with network interfaces.</p>
+<ul>
+<li><input disabled type=checkbox> can I change network interface settings inside virtual box? Because I don&rsquo;t understand how it is made.</li>
+</ul>
+<p>You can combine properties of two net interfaces on one machine to get value from both. But combination always increases complexity. Make sure that you deeply understand the building blocks. They will come handy in different situations like working in the Cloud, creating your own network at work or at home.</p>
+<h3 id=questions>Questions?</h3>
+<ul>
+<li>What is virtualization in simple words?</li>
+<li>Why virtualizaiton soft emulate hardware in software?</li>
+<li>Why there are different network interface modes in virtual box?</li>
+</ul>
+<hr>
+<h2 id=vlans>Vlans</h2>
+<p>Once we set up our virtual machines, we can move further with all routing and vlans.</p>
+<p>We need to understand what is VLAN.</p>
+<p>Image of ethernet frame with vlan id. another image how i imagine vlan on one interface.</p>
+<p>I imagine vlan as virtual(as the name stands) building that stands on this &ldquo;real&rdquo; ethernet. And depends on the structure of this building, packets to go one place or to another.
+Note that vlans exists only on router, client just contact the router via default routing and that it. Vlan id are needed when two routers communicate on the VLANs level that is level 2.
+Speaking more technically, vlan is logical entity that provide segmentation of the network usually done in the corporate environment. Such segmentation allows to restrict users from one department to contact very sensitive resources. In our task, we want to accomplish exactly such purpose.
+Also, need to admit that since it provides logical segmentation, it does not implement any restrictions. Restrictions are about firewalling. Please see the image of the router once again, it has interfaces in all vlans and can route traffic from and to them.</p>
+<p>Firstly, you need to create a traffic flow via router.</p>
+<p>image of when each can communicate with each other.</p>
+<p>What is needed for routing? IP address, so computers can communicate with each other on level 3 of [[OSI layers|OSI]] and you can ping each machine.
+I will give the following cidrs to the machine and particular ip for interface and machine.</p>
+<ul>
+<li>vlan1 10.1.1.0/24</li>
+<li>vlan2 10.1.2.0/24</li>
+<li>vlan3 10.1.3.0/24</li>
+<li>vlan0 10.1.4.0/24</li>
+</ul>
+<p>Why not only the one IPs? Because I will be able to add a new machine to the vlan with the ip from range easily. Management of single ip and of the cidr is completely the same.</p>
+<p>What is CIDR? cidr is the combination of network part of ip address and how many ips are left available assigned to the host machine. 24 means that first 24 digits from IP is filled and, 8 if left.</p>
+<p>Image of infra with IPs assigned.</p>
+<p>Router? Router is the machine that is located in all of the subnets, it&rsquo;s main task to forward packets to the subnet.
+This allocation of router in the subnet is indicated by presenting of the network inteface with the ip.</p>
+<p>iamge of the routher here.</p>
+<p>To configure all this staff, you will need only one command <code>ip</code>. Make sure to read the man page carefully. Especially for route, address, link.</p>
+<blockquote>
+<p>note for me: forgot how to make the configuration persistent.</p>
+</blockquote>
+<h3 id=make-the-configuration-persestent>Make the configuration persestent</h3>
+<p>Ubuntu network-manager
+Centos network interface configurations.</p>
+<p>These config files are read at a startup and are persistent from reboot to reboot.</p>
+<p>You can use the virtualization option to save the machine state if you are not sure. Also, you should know about snapshots. You can make as per any change in the configuration. Sort of git commit, creating a point to get back to the working state.</p>
+<p>Maybe to write commands for each vm?</p>
+<p>image of final configuration.</p>
+<hr>
+<h2 id=firewalling>Firewalling</h2>
+<p>Next part is about network firewall and some restrictions.</p>
+<p>Best tool to configure firewall rules is <code>iptables</code>. New tools like <code>ufw</code> for ubuntu or <code>firewall-cmd</code> on Centos are some kind of simplification of the iptables. They are working above this program, but with the simplification goes the limitations of covered variety of cases. They are fine for something usual, but require same iptables rules to be written in firewall-cmd direct rule(which didn&rsquo;t work at all) or writing config files for ufw with the same iptables rules as you were writing directly.</p>
+<p>In general, these new tools are great and easy to use but only for a &ldquo;usual&rdquo; tasks and not for something complicated.</p>
+<p>How does [[iptables]] work? Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
+There are 5 of chains speaking in terms of iptables: forward, input, output, prerouting, postrouting. But, you can ommit that pre/post things, because at these steps inital packages are modified, that is not very often made. You can read more about them on any other resources. I would recommend</p>
+<ul>
+<li><input disabled type=checkbox> place link here</li>
+<li><input disabled type=checkbox> draw an image of it</li>
+</ul>
+<p>Once again, no configuration are made on the end virtual machine, everything is done on the router.</p>
+<p>image of router as the cross road.</p>
+<p>Also, you may see that routers usually have special type of image in diagrams and so on. We can think of them in this way. And the kernel is the traffic light that tells if this package can go right or left :)</p>
+<p>Now we need to write rules for each vlan that has it&rsquo;s own range of IPs.</p>
+<ul>
+<li><input disabled type=checkbox> will need to write rules for each vlan here</li>
+</ul>
+<h3 id=nat>NAT</h3>
+<p>Network address translation. It is the process of changing IP address in the package to another one. Why it may be useful? To hide the servers behind nat that will only have the private ips and nat gateway will be contacted by these servers behind.</p>
+<p>In our case, we want exactly that, to hide servers behind and allow only one end machine to contact internet.</p>
+<p>Knowing that, we will write a rule that will forward traffic to another interface on the router(do you remember when we were choosing them precisely?) that can go to the internet by default.</p>
+<p>The package must go from one interface that received package to another that will send package. Even if it is done on one computer, it is postrouing chain in iptables.</p>
+<p>Please notice that packets go in both direction. Only one allow rule for outcomming requests will not made the work. You will need another rule for incomming packages.</p>
+<ul>
+<li><input disabled type=checkbox> nat rules go here</li>
+</ul>
+<p>Saving configuration to persistent and we are done.</p>
+<hr>
+<p>These article is the process of my digging for about a month in network configuration and I can made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.
+If this article saved your some time, you can (link to buy me a coffee).</p>
+<p>I&rsquo;ve tried to explain all the stuff in the analogues manner because I think they stick to your mind and you can reuse them in the future, or these images can evolve in your own pictures.
+If you, as I ended up, opened about 15 tabs with different explanations of terminologies, try to be calm and process them one by one understanding each small peace will make all them a great puzzle.</p>
+<p>When helped personally me with the amount of unfamiliar things that I offloaded them to the &ldquo;paper&rdquo;.(I&rsquo;ve used ipad :) ) and see them from the side. Because our brain can&rsquo;t keep in RAM a lot of things at one time, drawing or writing them down help you to process them. That&rsquo;s why whiteboard soft became popular in covid time.</p>
+<p>I&rsquo;ve attached the file with my drawing below, they are mostly in russian and I wan&rsquo;t aware that I would like to share them publicly. If they could be useful and interesting for someone, I will try to make them in English.</p>
+<h2 id=summary>Summary</h2>
+<p>I am sure that I will split this big article in 3 parts, or even on 4 with the conclusion.</p>
+<ul>
+<li><input disabled type=checkbox> try to add questions after each part for the reader to actively recall topics.</li>
+</ul>
+</div>
+</article>
+<div class=blog-post-comments>
+<div id=disqus_thread>
+<script type=text/javascript>(function(){var a=document.createElement('script'),b;a.type='text/javascript',a.async=!0,b='dmitriyvovk',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com/ class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+</div>
+<div id=footer-post-container>
+<div id=footer-post>
+<div id=nav-footer style=display:none>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>Blog posts</a></li>
+<li><a href=/tags>Tags</a></li>
+<li><a href=/about>About</a></li>
+</ul>
+</div>
+<div id=toc-footer style=display:none>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#actual-task>Actual task</a></li>
+<li><a href=#what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</a>
+<ul>
+<li><a href=#choosing-network-interfaces>Choosing network interfaces</a></li>
+<li><a href=#questions>Questions?</a></li>
+</ul>
+</li>
+<li><a href=#vlans>Vlans</a>
+<ul>
+<li><a href=#make-the-configuration-persestent>Make the configuration persestent</a></li>
+</ul>
+</li>
+<li><a href=#firewalling>Firewalling</a>
+<ul>
+<li><a href=#nat>NAT</a></li>
+</ul>
+</li>
+<li><a href=#summary>Summary</a></li>
+</ul>
+</nav>
+</div>
+<div id=share-footer style=display:none>
+<ul>
+<li>
+<a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f" aria-label=Facebook>
+<i class="fab fa-facebook fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://twitter.com/share?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&text=Setup%20VLAN%20routing%20on%20Linux" aria-label=Twitter>
+<i class="fab fa-twitter fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=Linkedin>
+<i class="fab fa-linkedin fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&is_video=false&description=Setup%20VLAN%20routing%20on%20Linux" aria-label=Pinterest>
+<i class="fab fa-pinterest fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="mailto:?subject=Setup%20VLAN%20routing%20on%20Linux&body=Check out this article: https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f" aria-label=Email>
+<i class="fas fa-envelope fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://getpocket.com/save?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=Pocket>
+<i class="fab fa-get-pocket fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://reddit.com/submit?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&title=Setup%20VLAN%20routing%20on%20Linux" aria-label=reddit>
+<i class="fab fa-reddit fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&name=Setup%20VLAN%20routing%20on%20Linux&description=What%20is%20the%20purpose%20of%20this%20writings%3f%20As%20for%20the%2025%20April%202021%2c%20I%20was%20in%20the%20process%20of%20learning%20networking%20for%20the%20DevOps%20position%20in%20my%20current%20company%20at%20Namecheap%20and%20I%26rsquo%3bve%20received%20the%20task%20to%20understand%20networking.%0aThe%20task%20was%20about%20creating%20network%20configuration%20where%20one%20linux%20machine%20is%20acting%20like%20a%20router%20and%20a%20few%20others%20are%20like%20clients%20that%20can%20communicate%20with%20each%20other%28depends%20of%20the%20topology%29%20or%20go%20to%20the%20Internet." aria-label=Tumblr>
+<i class="fab fa-tumblr fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdmitriyvovk.com%2fposts%2fsetup-vlan-routing-on-linux%2f&t=Setup%20VLAN%20routing%20on%20Linux" aria-label="Hacker News">
+<i class="fab fa-hacker-news fa-lg" aria-hidden=true></i>
+</a>
+</li>
+</ul>
+</div>
+<div id=actions-footer>
+<a id=menu-toggle class=icon href=# onclick="return $('#nav-footer').toggle(),!1" aria-label=Menu>
+<i class="fas fa-bars fa-lg" aria-hidden=true></i> Menu</a>
+<a id=toc-toggle class=icon href=# onclick="return $('#toc-footer').toggle(),!1" aria-label=TOC>
+<i class="fas fa-list fa-lg" aria-hidden=true></i> TOC</a>
+<a id=share-toggle class=icon href=# onclick="return $('#share-footer').toggle(),!1" aria-label=Share>
+<i class="fas fa-share-alt fa-lg" aria-hidden=true></i> share</a>
+<a id=top style=display:none class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page">
+<i class="fas fa-chevron-up fa-lg" aria-hidden=true></i> Top</a>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=footer-left>
+Copyright &copy; 2021 Dmitriy Vovk personal blog
+</div>
+<div class=footer-right>
+<nav>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>Blog posts</a></li>
+<li><a href=/tags>Tags</a></li>
+<li><a href=/about>About</a></li>
+</ul>
+</nav>
+</div>
+</footer>
+</div>
+</body>
+<link rel=stylesheet href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+</html>
