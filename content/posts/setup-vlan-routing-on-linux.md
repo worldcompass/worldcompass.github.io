@@ -2,7 +2,14 @@
 title: 'Setup VLAN routing on Linux'
 date: 2021-10-26T15:30:38+03:00
 draft: false
-tags: networking, Linux, iptables,
+tags: 
+- networking
+- Linux
+- iptables
+keywords: 
+    - networking
+    - Linux
+    - iptables
 ---
 
 # What is the purpose of this writings?
@@ -36,7 +43,7 @@ Questions?
 Let's start with configuring network interfaces on the router.
 
 ## What shall I do on the router machine?
-So, what is [[network interface]]? Network interface is a place where you plug ethernet cable into computer(similar for WiFi).
+So, what is network interface? Network interface is a place where you plug ethernet cable into computer(similar for WiFi).
 
 This network card could be emulated by the virtualization technologies and on one real network interface, you can create different virtual network interfaces.
 
@@ -46,7 +53,7 @@ This network card could be emulated by the virtualization technologies and on on
 So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the vms.
 
 ### Choosing network interfaces
-In order to accomplish this task, I need to set up 5 [[virtual machine]] in the virtualized environment and I choose the [[Virtual Box]]. 
+In order to accomplish this task, I need to set up 5 virtual machines in the virtualized environment and I choose the Virtual Box. 
 
 image with box goes here.
 
@@ -60,7 +67,7 @@ Using that Box analogy, let VMs to play inside without any connections to the ou
 Very detailed explanation [here](https://www.nakivo.com/blog/virtualbox-network-setting-guide/)
 
 
-Then goes the next step of choosing the second interface to the router. I understood from the task that I need something with [[NAT]] but NAT network or just NAT? Carefully look at the documentation. After a few minutes of staring, I saw that just NAT does not allow vm-to-vm communication.
+Then goes the next step of choosing the second interface to the router. I understood from the task that I need something with NAT but NAT network or just NAT? Carefully look at the documentation. After a few minutes of staring, I saw that just NAT does not allow vm-to-vm communication.
 
 
 Now we are finished with network interfaces.
@@ -91,7 +98,7 @@ Firstly, you need to create a traffic flow via router.
 
 image of when each can communicate with each other.
 
-What is needed for routing? IP address, so computers can communicate with each other on level 3 of [[OSI layers|OSI]] and you can ping each machine.
+What is needed for routing? IP address, so computers can communicate with each other on level 3 of OSI and you can ping each machine.
 I will give the following cidrs to the machine and particular ip for interface and machine.
 - vlan1 10.1.1.0/24
 - vlan2 10.1.2.0/24
@@ -132,7 +139,7 @@ Best tool to configure firewall rules is `iptables`. New tools like `ufw` for ub
 In general, these new tools are great and easy to use but only for a "usual" tasks and not for something complicated.
 
 ## How does iptables work? 
-Basically, it inspects all incomming packages that are processed and seen by the [[Linux kernel]] and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
+Basically, it inspects all incomming packages that are processed and seen by the Linux kernel and can do some things based on the information in the package. It has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
 There are 5 of chains speaking in terms of iptables: forward, input, output, prerouting, postrouting. But, you can ommit that pre/post things, because at these steps inital packages are modified, that is not very often made. You can read more about them on any other resources. I would recommend
 - [ ] place link here
 - [ ] draw an image of it
