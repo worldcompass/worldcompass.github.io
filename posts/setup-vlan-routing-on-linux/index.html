@@ -127,7 +127,6 @@ The task was about creating a network configuration where one Linux machine is a
 <li><a href=#what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</a>
 <ul>
 <li><a href=#choosing-network-interfaces>Choosing network interfaces</a></li>
-<li><a href=#questions>Questions?</a></li>
 </ul>
 </li>
 <li><a href=#vlans>Vlans</a>
@@ -141,6 +140,7 @@ The task was about creating a network configuration where one Linux machine is a
 <li><a href=#how-do-iptables-work>How do iptables work?</a></li>
 <li><a href=#nat>NAT</a></li>
 <li><a href=#conclusion>Conclusion</a></li>
+<li><a href=#ps>P.S</a></li>
 </ul>
 </nav>
 </div>
@@ -189,30 +189,20 @@ Covered topics</p>
 And then I started digging into the topic.
 Questions?</p>
 <ol>
-<li>
-<p>What is VLAN?</p>
-</li>
-<li>
-<p>How to make the connectivity?</p>
-</li>
-<li>
-<p>How can VLANs communicate?</p>
-</li>
-<li>
-<p>How to set everything up in the tools like Virtual Box?</p>
-</li>
-<li>
-<p>and tons of others.</p>
-<p>Let&rsquo;s start with configuring network interfaces on the router.</p>
-</li>
+<li>What is VLAN?</li>
+<li>How to make the connectivity?</li>
+<li>How can VLANs communicate?</li>
+<li>How to set everything up in the tools like Virtual Box?</li>
+<li>and tons of others.</li>
 </ol>
+<p>Let&rsquo;s start with configuring network interfaces on the router.</p>
 <h2 id=what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</h2>
 <p>So, what is a network interface? Physically, the network interface is a place where you plug an ethernet cable into the computer(similar to WiFi).
 This network card could be emulated by the virtualization technologies and on one real network interface, you can create different virtual network interfaces.</p>
 <blockquote>
-<p>Virtualization technologies could give different capabilities for network interfaces inside their virtualmachineland.
-So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the VMs.</p>
+<p>Virtualization technologies could give different capabilities for network interfaces inside their virtualmachineland.</p>
 </blockquote>
+<p>So we understand that there must be 2 network interfaces for the router and one for each of the VMs.</p>
 <h3 id=choosing-network-interfaces>Choosing network interfaces</h3>
 <p>In order to accomplish this task, I need to set up 5 virtual machines in the virtualized environment and I choose the Virtual Box.</p>
 <p>Virtual box and Virtualization technologies provide hardware resources by writing programs and software. Your machine will work completely in the same way, as it was working in the real environment without a virtualization layer. Except, the hypervisor will consume some resources to run your VMs.</p>
@@ -227,12 +217,6 @@ Now we are finished with network interfaces.</p>
 <p>It is not possible to manage networking settings inside a VM, it is made outside by the virtualization technology. Similarly, you define settings in VMWare.</p>
 </blockquote>
 <p>You can combine the properties of two net interfaces on one machine to get value from both. But combination always increases complexity. Make sure that you deeply understand the building blocks. They will come in handy in different situations like working in the Cloud, creating your own network at work or at home.</p>
-<h3 id=questions>Questions?</h3>
-<ul>
-<li>What is virtualization in simple words?</li>
-<li>Why virtualizaiton soft emulate hardware in software?</li>
-<li>Why there are different network interface modes in virtual box?</li>
-</ul>
 <h2 id=vlans>Vlans</h2>
 <p>Once we set up our virtual machines, we can move further with all routing and VLANs.
 We need to understand what is VLAN.</p>
@@ -246,20 +230,13 @@ What is needed for routing? IP addresses of course!</p>
 <p>So computers can communicate with each other on level 3 of OSI and you can ping each machine.
 I will give the following CIDRs to the machine and particular IP for interface and machine.</p>
 <ul>
-<li>
-<p>vlan1 10.1.1.0/24</p>
-</li>
-<li>
-<p>vlan2 10.1.2.0/24</p>
-</li>
-<li>
-<p>vlan3 10.1.3.0/24</p>
-</li>
-<li>
-<p>vlan0 10.1.4.0/24</p>
-<p>Why not only the one IPs? Because I will be able to add a new machine to the VLAN with the IP from range easily. Management of single ip and of the CIDR is completely the same.</p>
-</li>
+<li>vlan1 10.1.1.0/24</li>
+<li>vlan2 10.1.2.0/24</li>
+<li>vlan3 10.1.3.0/24</li>
+<li>vlan0 10.1.4.0/24</li>
 </ul>
+<p>Why not only the one IPs? Because I will be able to add a new machine to the VLAN with the IP from range easily. Management of single ip and of the CIDR is completely the same.</p>
+<p><img src=/vlan_images/Networking_practice.jpg alt="image of configuration with CIDRs assigned"></p>
 <h3 id=what-is-cidr>What is CIDR?</h3>
 <p>CIDR block is the combination of the network part of ip address and how many ips are left available for assignment to the host machine in the subnet. 24 means that the first 24 digits from IP is filled and, 8 is left available. It equals 254 IPs available.</p>
 <h3 id=router>Router?</h3>
@@ -267,8 +244,10 @@ I will give the following CIDRs to the machine and particular IP for interface a
 The presence of a router in the subnet is indicated by presenting the network interface with the ip.</p>
 <p>To configure all this stuff, you will need only one command <code>ip</code>. Make sure to read the man page carefully. Especially for <code>ip route</code>, <code>ip address</code>, <code>ip link</code>.</p>
 <h3 id=make-the-configuration-persestent>Make the configuration persestent</h3>
-<p>Ubuntu -> network-manager
-Centos -> network interface configurations.</p>
+<ul>
+<li>Ubuntu -> network-manager</li>
+<li>Centos -> network interface configurations.</li>
+</ul>
 <p>These config files are read at a startup and are persistent from reboot to reboot.</p>
 <p>You can use the virtualization option to save the machine state if you are not sure. Also, you should know about snapshots. You can make a snapshot per any change in the configuration. Similar to the commit in git, creating a point to get back to the working state.</p>
 <h2 id=firewalling>Firewalling</h2>
@@ -282,25 +261,15 @@ But with the simplification goes the limitations of a variety of cases. They are
 <p><code>iptables</code> has different algorithms of checking types of packages and different actions to perform like NATing the request, dropping packages or forwarding them.
 There are 5 chains speaking in terms of iptables:</p>
 <ul>
-<li>
-<p>forward</p>
-</li>
-<li>
-<p>input</p>
-</li>
-<li>
-<p>output</p>
-</li>
-<li>
-<p>prerouting</p>
-</li>
-<li>
-<p>postrouting</p>
-<p>Once again, no configurations are made on the end virtual machine, everything is done on the router.</p>
-<p>Also, you may see that routers usually have a special type of image in diagrams and so on. We can think of them in this way. And the kernel is the traffic light that tells if this package can go right or left :)
-Now we need to write rules for each VLAN that has its own range of IPs.</p>
-</li>
+<li>forward</li>
+<li>input</li>
+<li>output</li>
+<li>prerouting</li>
+<li>postrouting</li>
 </ul>
+<p>Once again, no configurations are made on the end virtual machine, everything is done on the router.</p>
+<p>Also, you may see that routers usually have a special type of image in diagrams and so on. We can think of them in this way. And the kernel is the traffic light that tells if this package can go right or left :)</p>
+<p>Now we need to write rules for each VLAN that has its own range of IPs.</p>
 <h2 id=nat>NAT</h2>
 <p>NAT stands for <strong>Network address translation</strong>.
 It is the process of changing the IP address from one package to another. Why it may be useful? To hide the servers behind NAT. NAT gateway will be contacted by these servers behind the interface present in the subnet.</p>
@@ -313,8 +282,11 @@ It is the process of changing the IP address from one package to another. Why it
 <p>I&rsquo;ve tried to explain all the stuff in the analogs manner because I think they stick to your mind and you can reuse them in the future.</p>
 <p>If you, as I ended up, opened about 15 tabs with different explanations of terminologies, try to be calm and process them one by one understanding each small piece will make all of them a great puzzle.</p>
 <p>What helped personally me with the number of unfamiliar things that I offloaded them to the &ldquo;paper&rdquo;.(I&rsquo;ve used iPad :) ) and see them from the side. Because our brain can&rsquo;t keep in &ldquo;RAM&rdquo; a lot of things at one time, drawing or writing them down helps you to process them. That&rsquo;s why whiteboard soft became popular in COVID time and due to interactive meetings too</p>
-<p>This article is the process of my digging for about a month in network configuration and I could have made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.
-If this article saved you some time, you can <img src=static/images/DV_buy_me_acoffee_picture.jpg alt=buy-my-a-coffee> <a href=https://www.buymeacoffee.com/worldcompass>buy me a coffee</a>.</p>
+<p>This article is the process of my digging for about a month in network configuration and I could have made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.</p>
+<p>If this article saved you some time, you can <img src=/images/DV_buy_me_acoffee_picture.jpg alt=test> <a href=https://www.buymeacoffee.com/worldcompass>buy me a coffee</a>.</p>
+<h2 id=ps>P.S</h2>
+<p>Note that actual commands are not pasted. Maybe I will regret it later, but it is made intentiously.
+And to tell the truth, they are not complicated at all.</p>
 </div>
 </article>
 <div class=blog-post-comments>
@@ -341,7 +313,6 @@ If this article saved you some time, you can <img src=static/images/DV_buy_me_ac
 <li><a href=#what-shall-i-do-on-the-router-machine>What shall I do on the router machine?</a>
 <ul>
 <li><a href=#choosing-network-interfaces>Choosing network interfaces</a></li>
-<li><a href=#questions>Questions?</a></li>
 </ul>
 </li>
 <li><a href=#vlans>Vlans</a>
@@ -355,6 +326,7 @@ If this article saved you some time, you can <img src=static/images/DV_buy_me_ac
 <li><a href=#how-do-iptables-work>How do iptables work?</a></li>
 <li><a href=#nat>NAT</a></li>
 <li><a href=#conclusion>Conclusion</a></li>
+<li><a href=#ps>P.S</a></li>
 </ul>
 </nav>
 </div>
