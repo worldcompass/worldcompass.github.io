@@ -48,6 +48,23 @@ weight = 5
     style = "dracula"
     tabWidth = 4
 
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+      emoji = true
+      mathjax = true
+      hashtag = true
+      wikilink = true
+      toc = true
+      mermaid = true
+
+      
 [params]
 
   colortheme = "white" # dark, light, white, or classic

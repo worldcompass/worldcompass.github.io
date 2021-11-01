@@ -41,7 +41,7 @@ Questions?
 4. How to set everything up in the tools like Virtual Box?
 5. and tons of others.
 
-   Let's start with configuring network interfaces on the router.
+Let's start with configuring network interfaces on the router.
 
 ## What shall I do on the router machine?
 
@@ -49,7 +49,8 @@ So, what is a network interface? Physically, the network interface is a place wh
 This network card could be emulated by the virtualization technologies and on one real network interface, you can create different virtual network interfaces.
 
 > Virtualization technologies could give different capabilities for network interfaces inside their virtualmachineland.
-> So, from the task, we understand that there must be 2 network interfaces for the router and one for each of the VMs.
+
+So we understand that there must be 2 network interfaces for the router and one for each of the VMs.
 
 ### Choosing network interfaces
 
@@ -71,12 +72,6 @@ Now we are finished with network interfaces.
 > It is not possible to manage networking settings inside a VM, it is made outside by the virtualization technology. Similarly, you define settings in VMWare.
 
 You can combine the properties of two net interfaces on one machine to get value from both. But combination always increases complexity. Make sure that you deeply understand the building blocks. They will come in handy in different situations like working in the Cloud, creating your own network at work or at home.
-
-### Questions?
-
-- What is virtualization in simple words?
-- Why virtualizaiton soft emulate hardware in software?
-- Why there are different network interface modes in virtual box?
 
 ## Vlans
 
@@ -101,7 +96,10 @@ I will give the following CIDRs to the machine and particular IP for interface a
 - vlan3 10.1.3.0/24
 - vlan0 10.1.4.0/24
 
-  Why not only the one IPs? Because I will be able to add a new machine to the VLAN with the IP from range easily. Management of single ip and of the CIDR is completely the same.
+Why not only the one IPs? Because I will be able to add a new machine to the VLAN with the IP from range easily. Management of single ip and of the CIDR is completely the same.
+
+![image of configuration with CIDRs assigned](/vlan_images/Networking_practice.jpg)
+
 
 ### What is CIDR?
 
@@ -116,8 +114,8 @@ To configure all this stuff, you will need only one command `ip`. Make sure to r
 
 ### Make the configuration persestent
 
-Ubuntu -> network-manager
-Centos -> network interface configurations.
+- Ubuntu -> network-manager
+- Centos -> network interface configurations.
 
 These config files are read at a startup and are persistent from reboot to reboot.
 
@@ -146,10 +144,11 @@ There are 5 chains speaking in terms of iptables:
 - prerouting
 - postrouting
 
-  Once again, no configurations are made on the end virtual machine, everything is done on the router.
+Once again, no configurations are made on the end virtual machine, everything is done on the router.
 
-  Also, you may see that routers usually have a special type of image in diagrams and so on. We can think of them in this way. And the kernel is the traffic light that tells if this package can go right or left :)
-  Now we need to write rules for each VLAN that has its own range of IPs.
+Also, you may see that routers usually have a special type of image in diagrams and so on. We can think of them in this way. And the kernel is the traffic light that tells if this package can go right or left :)
+  
+Now we need to write rules for each VLAN that has its own range of IPs.
 
 ## NAT
 
@@ -175,4 +174,9 @@ If you, as I ended up, opened about 15 tabs with different explanations of termi
 What helped personally me with the number of unfamiliar things that I offloaded them to the "paper".(I've used iPad :) ) and see them from the side. Because our brain can't keep in "RAM" a lot of things at one time, drawing or writing them down helps you to process them. That's why whiteboard soft became popular in COVID time and due to interactive meetings too
 
 This article is the process of my digging for about a month in network configuration and I could have made some mistakes in text or logic or anything else, please tell me about it. It is my experiment and first writing at all, I will be happy to read any feedback.
-If this article saved you some time, you can ![buy-my-a-coffee](static/images/DV_buy_me_acoffee_picture.jpg) [buy me a coffee](https://www.buymeacoffee.com/worldcompass).
+
+If this article saved you some time, you can ![test](/images/DV_buy_me_acoffee_picture.jpg) [buy me a coffee](https://www.buymeacoffee.com/worldcompass).
+
+## P.S
+Note that actual commands are not pasted. Maybe I will regret it later, but it is made intentiously.
+And to tell the truth, they are not complicated at all. 
